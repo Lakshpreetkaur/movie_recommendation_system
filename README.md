@@ -85,7 +85,7 @@ Avengers
 
 ## 👤 Author
 
-Lakshpreet Kaur
+Lakshpreet Kaur<br>
 https://github.com/Lakshpreetkaur
 
 ---
