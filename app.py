@@ -132,20 +132,33 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# ── Load data ─────────────────────────────────────────────────
+# ── Load data — rebuilds similarity so similarity.pkl NOT needed ───────
 @st.cache_data
 def load_data():
-    movies = pickle.load(open('movies.pkl', 'rb'))
-    similarity = pickle.load(open('similarity.pkl', 'rb'))
-    # Handle both DataFrame and dict formats
+    try:
+        movies = pickle.load(open('movies.pkl', 'rb'))
+    except FileNotFoundError:
+        return None, None
+
     if isinstance(movies, dict):
         movies = pd.DataFrame(movies)
+
+    # Rebuild similarity from tags column — Streamlit caches after first run
+    from sklearn.feature_extraction.text import CountVectorizer
+    from sklearn.metrics.pairwise import cosine_similarity
+    import numpy as np
+
+    cv = CountVectorizer(max_features=5000, stop_words='english')
+    vectors = cv.fit_transform(movies['tags']).toarray()
+    similarity = cosine_similarity(vectors).astype(np.float32)
+
     return movies, similarity
 
-try:
+with st.spinner("Setting up recommender... (first load ~20 sec, cached after that)"):
     movies_df, similarity = load_data()
-except FileNotFoundError:
-    st.error("movies.pkl or similarity.pkl not found. Make sure both files are in the same folder as app.py.")
+
+if movies_df is None:
+    st.error("movies.pkl not found. Make sure it is in the same folder as app.py.")
     st.stop()
 
 
