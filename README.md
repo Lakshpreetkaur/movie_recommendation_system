@@ -78,8 +78,6 @@ Avengers
 ## 🔮 What I plan to improve
 
 * Add collaborative filtering (user-based recommendations)
-* Build a simple web app (maybe using Streamlit)
-* Improve recommendation quality
 
 ---
 
